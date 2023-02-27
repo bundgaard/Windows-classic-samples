@@ -81,13 +81,14 @@ class LinearAnimation : public Animation<T>
 {
 public:
     LinearAnimation(T start=0, T end=0, T duration=0) :
-        Animation(start, end, duration)
+        Animation<T>(start, end, duration)
     {
     }
 protected:
     virtual T ComputeValue(T time)
     {
-        return m_Start + ((m_End - m_Start) * (time / m_Duration));
+        return Animation<T>::GetStart() + ((Animation<T>::GetEnd() - Animation<T>::GetStart()) * time / Animation<T>::GetDuration());
+        // return m_Start + ((m_End - m_Start) * (time / m_Duration));
     }
 };
 
@@ -102,13 +103,14 @@ class EaseInExponentialAnimation : public Animation<T>
 {
 public:
     EaseInExponentialAnimation(T start=0, T end=0, T duration=0) :
-        Animation(start, end, duration)
+        Animation<T>(start, end, duration)
     {
     }
 protected:
     T ComputeValue(T time)
     {
-        return m_Start + (m_End - m_Start) * pow(2, 10 * (time/m_Duration - 1));
+        return Animation<T>::GetStart() + (Animation<T>::GetEnd() - Animation<T>::GetStart()) * pow(2, 10 * (time / Animation<T>::GetDuration() - 1));
+        // return m_Start + (m_End - m_Start) * pow(2, 10 * (time / m_Duration - 1));
     }
 };
 
@@ -123,13 +125,14 @@ class EaseOutExponentialAnimation : public Animation<T>
 {
 public:
     EaseOutExponentialAnimation(T start=0, T end=0, T duration=0) :
-        Animation(start, end, duration)
+        Animation<T>(start, end, duration)
     {
     }
 protected:
     T ComputeValue(T time)
     {
-        return m_Start + (m_End - m_Start) * (-pow(2, -10 * time/m_Duration) + 1);
+      //  return m_Start + (m_End - m_Start) * (-pow(2, -10 * time/m_Duration) + 1);
+        return Animation<T>::GetStart() + (Animation<T>::GetEnd() - Animation<T>::GetStart()) * (-pow(2, -10 * time / Animation<T>::GetDuration()) + 1);
     }
 };
 
@@ -144,21 +147,21 @@ class EaseInOutExponentialAnimation : public Animation<T>
 {
 public:
     EaseInOutExponentialAnimation(T start=0, T end=0, T duration=0) :
-        Animation(start, end, duration)
+        Animation<T>(start, end, duration)
     {
     }
 protected:
     T ComputeValue(T time)
     {
         //compute the current time relative to the midpoint
-        time = time / (m_Duration / 2);
+        time = time / (Animation<T>::GetDuration() / 2);
         //if we haven't reached the midpoint, we want to do the ease-in portion
         if (time < 1)
         {
-            return m_Start + (m_End - m_Start)/2 * pow(2, 10 * (time - 1));
+            return Animation<T>::GetStart() + (Animation<T>::GetEnd()  - Animation<T>::GetStart()) / 2 * pow(2, 10 * (time - 1));
         }
         //otherwise, do the ease-out portion
-        return m_Start + (m_End - m_Start)/2 * (-pow(2, -10 * --time) + 2);
+        return Animation<T>::GetStart() + (Animation<T>::GetEnd() - Animation<T>::GetStart()) / 2 * (-pow(2, -10 * --time) + 2);
     }
 };
 

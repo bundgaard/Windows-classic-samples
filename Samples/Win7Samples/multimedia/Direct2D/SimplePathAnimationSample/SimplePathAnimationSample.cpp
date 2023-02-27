@@ -20,7 +20,7 @@ int WINAPI WinMain(
     HINSTANCE /* hPrevInstance */,
     LPSTR /* lpCmdLine */,
     int /* nCmdShow */
-    )
+)
 {
     // Ignoring the return value because we want to continue running even in the
     // unlikely event that HeapSetInformation fails.
@@ -94,14 +94,14 @@ HRESULT DemoApp::Initialize()
 
     //register window class
     WNDCLASSEX wcex = { sizeof(WNDCLASSEX) };
-    wcex.style         = CS_HREDRAW | CS_VREDRAW;
-    wcex.lpfnWndProc   = DemoApp::WndProc;
-    wcex.cbClsExtra    = 0;
-    wcex.cbWndExtra    = sizeof(LONG_PTR);
-    wcex.hInstance     = HINST_THISCOMPONENT;
-    wcex.hCursor       = LoadCursor(NULL, IDC_ARROW);
+    wcex.style = CS_HREDRAW | CS_VREDRAW;
+    wcex.lpfnWndProc = DemoApp::WndProc;
+    wcex.cbClsExtra = 0;
+    wcex.cbWndExtra = sizeof(LONG_PTR);
+    wcex.hInstance = HINST_THISCOMPONENT;
+    wcex.hCursor = LoadCursor(NULL, IDC_ARROW);
     wcex.hbrBackground = NULL;
-    wcex.lpszMenuName  = NULL;
+    wcex.lpszMenuName = NULL;
     wcex.lpszClassName = L"D2DDemoApp";
 
     RegisterClassEx(&wcex);
@@ -113,8 +113,8 @@ HRESULT DemoApp::Initialize()
         //
         // Because the CreateWindow function takes its size in pixels, we
         // obtain the system DPI and use it to scale the window size.
-        FLOAT dpiX, dpiY;
-        m_pD2DFactory->GetDesktopDpi(&dpiX, &dpiY);
+       //  FLOAT dpiX, dpiY;
+        // m_pD2DFactory->GetDesktopDpi(&dpiX, &dpiY);
 
         m_hwnd = CreateWindow(
             L"D2DDemoApp",
@@ -122,13 +122,14 @@ HRESULT DemoApp::Initialize()
             WS_OVERLAPPEDWINDOW,
             CW_USEDEFAULT,
             CW_USEDEFAULT,
-            static_cast<UINT>(ceil(512.f * dpiX / 96.f)),
-            static_cast<UINT>(ceil(512.f * dpiY / 96.f)),
+            static_cast<UINT>(ceil(512.f)),
+            static_cast<UINT>(ceil(512.f)),
             NULL,
             NULL,
             HINST_THISCOMPONENT,
             this
-            );
+        );
+        UINT dpi = ::GetDpiForWindow(HWND_DESKTOP);
         hr = m_hwnd ? S_OK : E_FAIL;
         if (SUCCEEDED(hr))
         {
@@ -137,7 +138,7 @@ HRESULT DemoApp::Initialize()
             hr = m_pPathGeometry->ComputeLength(
                 NULL, //no transform
                 &length
-                );
+            );
             if (SUCCEEDED(hr))
             {
                 m_Animation.SetStart(0);        //start at beginning of path
@@ -180,7 +181,7 @@ HRESULT DemoApp::Initialize()
 HRESULT DemoApp::CreateDeviceIndependentResources()
 {
     HRESULT hr;
-    ID2D1GeometrySink *pSink = NULL;
+    ID2D1GeometrySink* pSink = NULL;
 
     // Create a Direct2D factory.
     hr = D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &m_pD2DFactory);
@@ -197,11 +198,11 @@ HRESULT DemoApp::CreateDeviceIndependentResources()
     }
     if (SUCCEEDED(hr))
     {
-        D2D1_POINT_2F currentLocation = {0, 0};
+        D2D1_POINT_2F currentLocation = { 0, 0 };
 
         pSink->BeginFigure(currentLocation, D2D1_FIGURE_BEGIN_FILLED);
 
-        D2D1_POINT_2F locDelta = {2, 2};
+        D2D1_POINT_2F locDelta = { 2, 2 };
         float radius = 3;
 
         for (UINT i = 0; i < 30; ++i)
@@ -212,12 +213,12 @@ HRESULT DemoApp::CreateDeviceIndependentResources()
             pSink->AddArc(
                 D2D1::ArcSegment(
                     currentLocation,
-                    D2D1::SizeF(2*radius, 2*radius), // radiusx/y
+                    D2D1::SizeF(2 * radius, 2 * radius), // radiusx/y
                     0.0f, // rotation angle
                     D2D1_SWEEP_DIRECTION_CLOCKWISE,
                     D2D1_ARC_SIZE_SMALL
-                    )
-                );
+                )
+            );
 
             locDelta = D2D1::Point2F(-locDelta.y, locDelta.x);
 
@@ -244,9 +245,9 @@ HRESULT DemoApp::CreateDeviceIndependentResources()
         pSink->BeginFigure(
             D2D1::Point2F(0.0f, 0.0f),
             D2D1_FIGURE_BEGIN_FILLED
-            );
+        );
 
-        const D2D1_POINT_2F ptTriangle[] = {{-10.0f, -10.0f}, {-10.0f, 10.0f}, {0.0f, 0.0f}};
+        const D2D1_POINT_2F ptTriangle[] = { {-10.0f, -10.0f}, {-10.0f, 10.0f}, {0.0f, 0.0f} };
         pSink->AddLines(ptTriangle, 3);
 
         pSink->EndFigure(D2D1_FIGURE_END_OPEN);
@@ -282,21 +283,21 @@ HRESULT DemoApp::CreateDeviceResources()
         D2D1_SIZE_U size = D2D1::SizeU(
             rc.right - rc.left,
             rc.bottom - rc.top
-            );
+        );
 
         // Create a Direct2D render target
         hr = m_pD2DFactory->CreateHwndRenderTarget(
             D2D1::RenderTargetProperties(),
             D2D1::HwndRenderTargetProperties(m_hwnd, size),
             &m_pRT
-            );
+        );
         if (SUCCEEDED(hr))
         {
             // Create a red brush.
             hr = m_pRT->CreateSolidColorBrush(
                 D2D1::ColorF(D2D1::ColorF::Red),
                 &m_pRedBrush
-                );
+            );
         }
         if (SUCCEEDED(hr))
         {
@@ -304,7 +305,7 @@ HRESULT DemoApp::CreateDeviceResources()
             hr = m_pRT->CreateSolidColorBrush(
                 D2D1::ColorF(D2D1::ColorF::Yellow),
                 &m_pYellowBrush
-                );
+            );
         }
     }
 
@@ -378,12 +379,12 @@ HRESULT DemoApp::OnRender()
         D2D1::Matrix3x2F scale = D2D1::Matrix3x2F::Scale(
             minWidthHeightScale,
             minWidthHeightScale
-            );
+        );
 
         D2D1::Matrix3x2F translation = D2D1::Matrix3x2F::Translation(
             rtSize.width / 2,
             rtSize.height / 2
-            );
+        );
 
         // Prepare to draw.
         m_pRT->BeginDraw();
@@ -416,7 +417,7 @@ HRESULT DemoApp::OnRender()
             tangent.x, tangent.y,
             -tangent.y, tangent.x,
             point.x, point.y
-            );
+        );
 
         m_pRT->SetTransform(triangleMatrix * scale * translation);
 
@@ -440,7 +441,7 @@ HRESULT DemoApp::OnRender()
         else
         {
             float_time += static_cast<float>(m_DwmTimingInfo.rateCompose.uiDenominator) /
-                          static_cast<float>(m_DwmTimingInfo.rateCompose.uiNumerator);
+                static_cast<float>(m_DwmTimingInfo.rateCompose.uiNumerator);
         }
     }
 
@@ -488,60 +489,60 @@ LRESULT CALLBACK DemoApp::WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM
     if (message == WM_CREATE)
     {
         LPCREATESTRUCT pcs = (LPCREATESTRUCT)lParam;
-        DemoApp *pDemoApp = (DemoApp *)pcs->lpCreateParams;
+        DemoApp* pDemoApp = (DemoApp*)pcs->lpCreateParams;
 
         ::SetWindowLongPtrW(
             hwnd,
             GWLP_USERDATA,
             reinterpret_cast<LONG_PTR>(pDemoApp)
-            );
+        );
 
         result = 1;
     }
     else
     {
-        DemoApp *pDemoApp = reinterpret_cast<DemoApp *>(
+        DemoApp* pDemoApp = reinterpret_cast<DemoApp*>(
             ::GetWindowLongPtrW(
                 hwnd,
                 GWLP_USERDATA
-                ));
+            ));
 
         bool wasHandled = false;
 
         if (pDemoApp)
         {
-            switch(message)
+            switch (message)
             {
             case WM_SIZE:
-                {
-                    UINT width = LOWORD(lParam);
-                    UINT height = HIWORD(lParam);
-                    pDemoApp->OnResize(width, height);
-                }
-                result = 0;
-                wasHandled = true;
-                break;
+            {
+                UINT width = LOWORD(lParam);
+                UINT height = HIWORD(lParam);
+                pDemoApp->OnResize(width, height);
+            }
+            result = 0;
+            wasHandled = true;
+            break;
 
             case WM_PAINT:
             case WM_DISPLAYCHANGE:
-                {
-                    PAINTSTRUCT ps;
-                    BeginPaint(hwnd, &ps);
+            {
+                PAINTSTRUCT ps;
+                BeginPaint(hwnd, &ps);
 
-                    pDemoApp->OnRender();
-                    EndPaint(hwnd, &ps);
-                }
-                result = 0;
-                wasHandled = true;
-                break;
+                pDemoApp->OnRender();
+                EndPaint(hwnd, &ps);
+            }
+            result = 0;
+            wasHandled = true;
+            break;
 
             case WM_DESTROY:
-                {
-                    PostQuitMessage(0);
-                }
-                result = 1;
-                wasHandled = true;
-                break;
+            {
+                PostQuitMessage(0);
+            }
+            result = 1;
+            wasHandled = true;
+            break;
             }
         }
 
